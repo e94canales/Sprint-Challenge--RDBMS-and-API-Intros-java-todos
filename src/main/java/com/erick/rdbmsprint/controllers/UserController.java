@@ -2,6 +2,7 @@ package com.erick.rdbmsprint.controllers;
 
 import com.erick.rdbmsprint.models.User;
 import com.erick.rdbmsprint.services.UserService;
+import com.erick.rdbmsprint.views.UserTodoCount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -47,6 +48,30 @@ public class UserController {
                 .toUri();
         responseHeaders.setLocation(newUserURI);
 
-        return new ResponseEntity<>(null, responseHeaders, HttpStatus.CREATED);
+        return new ResponseEntity<>(newUser.getUsername() + " has been created @ id: " + newUser.getUserid(), responseHeaders, HttpStatus.CREATED);
+    }
+
+    // PUT http://localhost:2019/users/user/12
+    @PutMapping(value = "/user/{id}", consumes = {"application/json"})
+    public ResponseEntity<?> updateFullUser(@Validated @RequestBody User newUserToUpdate, @PathVariable long id){
+        newUserToUpdate.setUserid(id);
+        userService.saveUser(newUserToUpdate);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // DELETE http://localhost:2019/users/user/1
+    @DeleteMapping(value = "/user/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable long id){
+        userService.deleteUser(id);
+
+        return new ResponseEntity<>("deleted user with id: " + id, HttpStatus.OK);
+    }
+
+    // http://localhost:2019/users/users/todos
+    @GetMapping(value = "users/todos")
+    public ResponseEntity<?> getCounts(){
+        List<UserTodoCount> userList = userService.getCountUsers();
+        return new ResponseEntity<>(userList, HttpStatus.OK);
     }
 }

@@ -4,11 +4,12 @@ import com.erick.rdbmsprint.models.Todos;
 import com.erick.rdbmsprint.models.User;
 import com.erick.rdbmsprint.repositories.TodosRepository;
 import com.erick.rdbmsprint.repositories.UserRepository;
+import com.erick.rdbmsprint.views.UserTodoCount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,10 +52,30 @@ public class UserServiceImpl implements UserService{
 
         newUser.getTodos().clear();
         for (Todos t : user.getTodos()){
-            newUser.getTodos().add(t);
+
+            Todos newTodo = new Todos();
+            newTodo.setDescription(t.getDescription());
+            newTodo.setUser(newUser);
+
+            newUser.getTodos().add(newTodo);
         }
 
         return userRepository.save(newUser);
 
+    }
+
+    @Transactional
+    @Override
+    public void deleteUser(long id) {
+        if (userRepository.findById(id).isPresent()){
+            userRepository.deleteById(id);
+        } else {
+            throw new EntityNotFoundException("USER ID NOT FOUND");
+        }
+    }
+
+    @Override
+    public List<UserTodoCount> getCountUsers() {
+        return userRepository.getCountUsers();
     }
 }

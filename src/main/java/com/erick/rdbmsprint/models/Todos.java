@@ -28,6 +28,10 @@ public class Todos extends Auditor{
         this.user = user;
     }
 
+    public Todos(String description) {
+        this.description = description;
+    }
+
     public long getTodoid() {
         return todoid;
     }

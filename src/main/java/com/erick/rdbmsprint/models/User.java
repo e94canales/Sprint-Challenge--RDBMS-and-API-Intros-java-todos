@@ -15,7 +15,8 @@ public class User extends Auditor{
     private long userid;
     @Column(nullable = false, unique = true)
     private String username;
-    @Column(nullable = false)
+//    @Transient
+//    @Column(nullable = false)
     private String password;
     @Column(nullable = false)
     private String primaryemail;
